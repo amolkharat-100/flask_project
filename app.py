@@ -1,9 +1,9 @@
-from flask import Flask,abort,render_template
+from flask import Flask,abort,render_template, request, url_for, flash, redirect
 from markupsafe import escape
 import datetime
 
 app = Flask(__name__)
-
+app.config['SECRET_KEY'] = "Your_secret_string"
 
 @app.route('/')
 
@@ -46,6 +46,21 @@ def comments():
                 ]
 
     return render_template('comments.html', comments=comments)
+
+@app.route('/create/', methods=('GET', 'POST'))
+def create():
+    if request.method == 'POST':
+        title=request.form['title']
+        content=request.form['content']
+
+        if not title:
+            flash('Title is required')
+        elif not content:
+            flash('Content is required')
+        else:
+            messages.append({'title': title,'content': content})
+            return redirect(url_for('index'))
+    return render_template('create.html')
 
 
 
